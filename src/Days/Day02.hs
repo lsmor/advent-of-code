@@ -1,6 +1,5 @@
 module Days.Day02 (runDay) where
 
-{- ORMOLU_DISABLE -}
 import Data.List
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
@@ -10,30 +9,56 @@ import qualified Data.Set as Set
 import Data.Vector (Vector)
 import qualified Data.Vector as Vec
 import qualified Util.Util as U
-
+import Data.Text (Text)
+import qualified Data.Text as T
 import qualified Program.RunDay as R (runDay)
 import Data.Attoparsec.Text
-import Data.Void
-{- ORMOLU_ENABLE -}
+import Data.Void ( Void )
+
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
 
 ------------ PARSER ------------
 inputParser :: Parser Input
-inputParser = error "Not implemented yet!"
+inputParser = flip sepBy endOfLine $ do
+    lowBound <- decimal
+    char '-'
+    upperBound <- decimal
+    space
+    character <- anyChar
+    string ": "
+    passw <- takeTill isEndOfLine
+    let policy = Policy {..}
+    return PassW {..}
 
 ------------ TYPES ------------
-type Input = Void
+data Policy = Policy {lowBound :: Int, upperBound :: Int, character :: Char} deriving (Eq, Show)
+data PassW  = PassW {policy :: Policy, passw :: Text} deriving (Eq, Show)
+type Input = [PassW]
 
-type OutputA = Void
+type OutputA = Int
 
-type OutputB = Void
+type OutputB = Int
 
+isValidPassWA :: PassW -> Bool 
+isValidPassWA PassW {..} = 
+    let characterOccurrences = T.length $ T.filter (character policy == ) passw  
+     in lowBound policy <= characterOccurrences && characterOccurrences <= upperBound policy
+
+isValidPassWB :: PassW -> Bool 
+isValidPassWB PassW {..} = 
+    let vectorOfChars = Vec.fromList (T.unpack passw) 
+        characterAtLow = vectorOfChars Vec.!? (lowBound policy - 1)
+        characterAtUp  = vectorOfChars Vec.!? (upperBound policy - 1)
+        c = character policy
+        isInLow = characterAtLow == Just c
+        isInUp = characterAtUp == Just c
+     in (isInLow && not isInUp) ||(isInUp && not isInLow)
 ------------ PART A ------------
 partA :: Input -> OutputA
-partA = error "Not implemented yet!"
+partA = length . filter isValidPassWA
 
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB = length . filter isValidPassWB

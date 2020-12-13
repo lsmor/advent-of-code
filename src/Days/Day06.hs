@@ -36,14 +36,17 @@ type Input = [Group]
 
 type OutputA = Int
 
-type OutputB = Void
+type OutputB = Int
 
 ------------ PART A ------------
 yesanswers :: Group -> Set Char
 yesanswers g = Set.fromList $ concat g
 
+yesOnly :: Group -> Set Char
+yesOnly = foldl1 Set.intersection . fmap Set.fromList 
+
 partA :: Input -> OutputA
 partA = sum . fmap (Set.size . yesanswers)
 ------------ PART B ------------
 partB :: Input -> OutputB
-partB = error "Not implemented yet!"
+partB = sum . fmap (Set.size . yesOnly)

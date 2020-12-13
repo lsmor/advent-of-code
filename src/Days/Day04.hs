@@ -2,24 +2,13 @@
 module Days.Day04 (runDay) where
 
 import Data.Attoparsec.Text
-import Data.List
-import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Maybe
-import Data.Set (Set)
-import qualified Data.Set as Set
 import Data.Text (Text, unpack)
 import qualified Data.Text as T
 import Text.Read (readMaybe)
-import Data.Vector (Vector)
-import qualified Data.Vector as Vec
-import Data.Void
-import Control.Applicative
-import Control.Monad
 import Data.Char
 import qualified Program.RunDay as R (runDay)
-import qualified Util.Util as U
-import Data.Maybe
 
 runDay :: Bool -> String -> IO ()
 runDay = R.runDay inputParser partA partB
@@ -57,9 +46,6 @@ passPortFromMap m = do
     let cid = Cid $ "cid" `Map.lookup` m
 
     return PassPort {..}
-
-example :: Text
-example = "pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980\nhcl:#623a2f"
 
 passPortFromMapValidate :: Map.Map Text Text -> Maybe PassPort 
 passPortFromMapValidate m = do
